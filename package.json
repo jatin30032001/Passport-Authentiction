@@ -1,0 +1,26 @@
+{
+  "name": "passport-authentiction",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev" :"nodemon index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jatin30032001/Passport-Authentiction.git"
+  },
+  "author": "Jatin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jatin30032001/Passport-Authentiction/issues"
+  },
+  "homepage": "https://github.com/jatin30032001/Passport-Authentiction#readme",
+  "dependencies": {
+    "ejs": "^3.1.8",
+    "express": "^4.18.2",
+    "mongoose": "^6.6.5",
+    "nodemon": "^2.0.20"
+  }
+}
