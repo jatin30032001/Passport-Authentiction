@@ -24,7 +24,7 @@ routes.use(passport.session());
 
 routes.use(flash());
 
-routes.use(function(req,res,next){
+routes.use(function(req, res, next){
     res.locals.success_message = req.flash('success_message')
     res.locals.error_message = req.flash('error_message');
     res.locals.error = req.flash('error');
@@ -32,13 +32,13 @@ routes.use(function(req,res,next){
 })
 
 
-const checkAuthenticated = function(req,res,next){
+const checkAuthenticated = function(req, res, next){
     if(req.isAuthenticated()){
-        res.set('Cache.Control','no-cache, private, no-store, must-revalidate, post-check=0, pre-check=0')
+        res.set('Cache.Control','no-cache', 'private', 'no-store',  'must-revalidate', 'post-check=0', 'pre-check=0')
         return next();
     }
     else{
-        res.redirect('/login')
+        res.redirect('/login');
     }
 }
 
@@ -144,11 +144,11 @@ var localStrategy = require('passport-local').Strategy;
     passport.authenticate('local',{
         failureRedirect:"/login",
         successRedirect:'/success',
-        failureFlash:true
-    })(req,res,next);
+        failureFlash:true,
+    })(req, res, next);
  })
 
- routes.get('/success',checkAuthenticated,(req,res)=>{
+ routes.get('/success', checkAuthenticated, (req,res)=>{
     res.render('success',{'user':req.user});
  })
 
