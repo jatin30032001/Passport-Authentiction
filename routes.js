@@ -5,8 +5,31 @@ const bodyparser =require('body-parser')
 const bcrypt = require('bcryptjs')
 const user = require ('./models.js')
 const passport= require('passport');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const flash = require('connect-flash');
 
 routes.use(bodyparser.urlencoded({extended:true}));
+routes.use(cookieParser('secret'));
+routes.use(session({
+    secret :'secret',
+    maxAge : 3600000,
+    resave:true,
+    saveUninitialized:true,
+}))
+
+
+routes.use(passport.initialize());
+routes.use(passport.session());
+
+routes.use(flash());
+
+routes.use(function(req,res,next){
+    res.locals.success_message = req.flash('success_message')
+    res.locals.error_message = req.flash('error_message');
+    res.locals.error = req.flash('error');
+    next();
+})
 
 mongoose.connect('mongodb+srv://Jatin:Jatin%40123@cluster0.8vnmjny.mongodb.net/?retryWrites=true&w=majority',{
     useNewUrlParser :true,
@@ -51,6 +74,8 @@ routes.post('/register',(req,res)=>{
                                     email,username,password,
                                 })
                                 .save((err,data)=>{
+                                    if(err) throw err;
+                                    req.flash('success_message',"Registered Successful...Login To Continue")
                                     res.redirect('/login')
                                 })
                             })
@@ -64,13 +89,56 @@ routes.post('/register',(req,res)=>{
 //Authentication Strategy
 
 var localStrategy = require('passport-local').Strategy;
- 
+ passport.use(new localStrategy({usernameField:'email'} ,(email,password,done)=>{
+    user.findOne({email:email},(err,data)=>{
+        if(err) throw err;
+        if(!data){
+            return done(null,false);
+        }
+        bcrypt.compare(password,data.password,(err,match)=>{
+            if(err){
+                return done(null,false);
+            }
+
+            if(!match){
+                return done(null,false);
+            }
+
+            if(match){
+                return done(null,data)
+            }
+        })
+    });
+ }));
+
+ passport.serializeUser(function(user,cb){
+    cb(null,user.id);
+ })
+
+ passport.deserializeUser(function(id,cb){
+    user.findById(id,function(err,user){
+        cb(err,user);
+    })
+ })
+
+//end of Authentication Startegy
 
 
  routes.get('/login' , (req,res)=>{
     res.render('login')
  })
 
+ routes.post('/login',(req,res,next)=>{
+    passport.authenticate('local',{
+        failureRedirect:"/login",
+        successRedirect:'/success',
+        failureMessage:true
+    })(req,res,next);
+ })
+
+ routes.get('/success',(req,res)=>{
+    res.render('success');
+ })
 
 
 module.exports= routes;

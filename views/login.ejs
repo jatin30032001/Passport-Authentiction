@@ -57,7 +57,23 @@
         <h1 class="text-center p-3">Login Here</h1>
         <div style="margin: 0 auto;" class="col-12 col-md-6 col-lg-5 p-5 customborder">
             <form action="/login" method="POST">
-                <div class="mb-3">
+              <% if(success_message != ''){%>
+                  <div class="alert alert-dismissible alert-success">
+                    
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong><%= success_message %> </strong>
+                  </div>
+              <%} %>
+
+              <% if(error != ''){ %>
+                <div class="alert alert-dismissible alert-success">
+                    
+                  <button type="button" class="close" data-dismiss="alert">&times;</button>
+                  <strong><%= error %> </strong>
+                        </div>
+                <% } %>
+
+                <div class="mb-3"> 
                     <label for="username">Enter Your Email</label>
                     <input type="email" class="form-control form-control-lg" name="email" id="username" autocomplete="off"
                         placeholder="Email">
