@@ -12,6 +12,9 @@ app.post('/register',routes);
 app.get('/login',routes);
 app.post('/login',routes);
 app.get('/success',routes);
+app.get('/logout',routes);
+
+
 
 
 

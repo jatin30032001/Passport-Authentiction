@@ -31,6 +31,18 @@ routes.use(function(req,res,next){
     next();
 })
 
+
+const checkAuthenticated = function(req,res,next){
+    if(req.isAuthenticated()){
+        res.set('Cache.Control','no-cache, private, no-store, must-revalidate, post-check=0, pre-check=0')
+        return next();
+    }
+    else{
+        res.redirect('/login')
+    }
+}
+
+
 mongoose.connect('mongodb+srv://Jatin:Jatin%40123@cluster0.8vnmjny.mongodb.net/?retryWrites=true&w=majority',{
     useNewUrlParser :true,
     useUnifiedTopology:true,
@@ -93,7 +105,7 @@ var localStrategy = require('passport-local').Strategy;
     user.findOne({email:email},(err,data)=>{
         if(err) throw err;
         if(!data){
-            return done(null,false);
+            return done(null,false,{message:"User Doesn't Exists.."});
         }
         bcrypt.compare(password,data.password,(err,match)=>{
             if(err){
@@ -101,7 +113,7 @@ var localStrategy = require('passport-local').Strategy;
             }
 
             if(!match){
-                return done(null,false);
+                return done(null,false,{message :"Password Doesnt Match"});
             }
 
             if(match){
@@ -132,13 +144,19 @@ var localStrategy = require('passport-local').Strategy;
     passport.authenticate('local',{
         failureRedirect:"/login",
         successRedirect:'/success',
-        failureMessage:true
+        failureFlash:true
     })(req,res,next);
  })
 
- routes.get('/success',(req,res)=>{
-    res.render('success');
+ routes.get('/success',checkAuthenticated,(req,res)=>{
+    res.render('success',{'user':req.user});
  })
 
+
+
+ routes.get('/logout',(req,res)=>{
+    // req.logout();
+    res.redirect('/login')
+ })
 
 module.exports= routes;
